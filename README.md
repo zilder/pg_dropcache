@@ -18,10 +18,18 @@ create extension pg_dropcache;
 
 ## Usage
 
+**WARNING**: Dirty pages will be just dropped, therefore they won't be flushed on the disk! It should be used with extreme caution!
+
 To clear buffer cache just run query:
 
 ```
 select pg_dropcache();
+```
+
+To clear just a single relation:
+
+```
+select pg_drop_rel_cache(relation regclass);
 ```
 
 Have fun!
