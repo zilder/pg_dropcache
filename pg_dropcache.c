@@ -1,6 +1,7 @@
 #include "postgres.h"
 #include "storage/bufmgr.h"
 #include "utils/syscache.h"
+#include "utils/builtins.h"
 #include "access/htup_details.h"
 #include "miscadmin.h"
 
@@ -20,8 +21,8 @@ Datum
 pg_drop_rel_cache(PG_FUNCTION_ARGS)
 {
 	Oid			relid = PG_GETARG_OID(0);
+	int			forkNum;
 	HeapTuple	tp;
-	int			forknum;
 	RelFileNodeBackend	rnode;
 
 	tp = SearchSysCache1(RELOID, ObjectIdGetDatum(relid));
@@ -44,9 +45,9 @@ pg_drop_rel_cache(PG_FUNCTION_ARGS)
 		PG_RETURN_VOID();
 	}
 
-	for (forknum = 0; forknum < MAX_FORKNUM; ++forknum)
-	{
-		DropRelFileNodeBuffers(rnode, forknum, 0);
-	}
+	forkNum = PG_ARGISNULL(1) ? 0 : forkname_to_number(text_to_cstring(PG_GETARG_TEXT_P(1)));
+	for (; forkNum <= MAX_FORKNUM; ++forkNum)
+		DropRelFileNodeBuffers(rnode, forkNum, 0);
+
 	PG_RETURN_VOID();
 }
