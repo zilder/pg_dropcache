@@ -4,6 +4,7 @@
 #include "utils/builtins.h"
 #include "access/htup_details.h"
 #include "miscadmin.h"
+#include "catalog/pg_class.h"
 
 PG_MODULE_MAGIC;
 
